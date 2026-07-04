@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { connectFeed } from "./websocket.js";
 
 function main() {

@@ -1,0 +1,9 @@
+services:
+    app:
+        image: oddspapi-risk-guard
+        container_name: oddspapi-risk-guard
+        build: .
+        ports:
+            - "3000:3000"
+        env_file:
+            - .env

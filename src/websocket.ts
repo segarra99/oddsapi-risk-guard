@@ -13,9 +13,7 @@ export function connectFeed(onMessage: (data: any) => void) {
     const ws = new WebSocket(wsUrl);
 
     ws.on("open", () => {
-        ws.send(
-            JSON.stringify({ type: "login", apiKey: apiKey }),
-        );
+        ws.send(JSON.stringify({ type: "login", apiKey: apiKey }));
         console.log("connected");
     });
 
