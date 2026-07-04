@@ -1,0 +1,29 @@
+{
+    "name": "oddspapi-risk-guard",
+    "version": "1.0.0",
+    "description": "Node.js service that connects to the **OddsPapi** sports live feed and processes real-time odds data.",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/segarra99/oddsapi-risk-guard.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "bugs": {
+        "url": "https://github.com/segarra99/oddsapi-risk-guard/issues"
+    },
+    "homepage": "https://github.com/segarra99/oddsapi-risk-guard#readme",
+    "devDependencies": {
+        "@types/node": "^26.1.0",
+        "@types/ws": "^8.18.1",
+        "typescript": "^6.0.3"
+    },
+    "dependencies": {
+        "ws": "^8.21.0"
+    }
+}
