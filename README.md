@@ -1,4 +1,4 @@
-# API Risk Guard
+# Odds Feed Risk Guard
 
 Node.js service that connects to the **OddsPapi** sports live feed and processes real-time odds data.
 

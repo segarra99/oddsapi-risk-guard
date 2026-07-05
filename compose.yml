@@ -1,7 +1,7 @@
 services:
     app:
-        image: oddspapi-risk-guard
-        container_name: oddspapi-risk-guard
+        image: odds-feed-risk-guard
+        container_name: odds-feed-risk-guard
         build: .
         ports:
             - "3000:3000"
