@@ -1,4 +1,5 @@
 import WebSocket from "ws";
+import { MessageEnvelopeSchema } from "./schemas/index.js";
 
 export function connectFeed(onMessage: (data: any) => void) {
     const wsUrl = process.env.ODDS_WS_URL;
@@ -13,14 +14,35 @@ export function connectFeed(onMessage: (data: any) => void) {
     const ws = new WebSocket(wsUrl);
 
     ws.on("open", () => {
-        ws.send(JSON.stringify({ type: "login", apiKey: apiKey }));
+        ws.send(
+            JSON.stringify({
+                type: "login",
+                apiKey: apiKey,
+                receiveType: "json",
+                channels: ["bookmakers", "fixtures", "odds", "scores"],
+                sportIds: [10, 11, 12],
+                bookmakers: ["pinnacle", "betfair-ex", "circasports"],
+            }),
+        );
         console.log("connected");
     });
 
     ws.on("message", (data) => {
         try {
-            const msg = JSON.parse(data.toString());
-            onMessage(msg);
+            const json = JSON.parse(data.toString());
+
+            if ("channel" in json) {
+                try {
+                    const msg = MessageEnvelopeSchema.parse(json);
+                    console.log(msg);
+                    onMessage(msg);
+                } catch (err) {
+                    console.error("failed to parse message envelope", err);
+                    return;
+                }
+            } else {
+                console.log("received non channel message", json);
+            }
         } catch (err) {
             console.error("failed to parse message", err);
         }
