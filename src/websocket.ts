@@ -30,18 +30,13 @@ export function connectFeed(onMessage: (data: any) => void) {
     ws.on("message", (data) => {
         try {
             const json = JSON.parse(data.toString());
+            const parsed = MessageEnvelopeSchema.safeParse(json);
 
-            if ("channel" in json) {
-                try {
-                    const msg = MessageEnvelopeSchema.parse(json);
-                    console.log(msg);
-                    onMessage(msg);
-                } catch (err) {
-                    console.error("failed to parse message envelope", err);
-                    return;
-                }
+            if (parsed.success) {
+                console.log(parsed.data);
+                onMessage(parsed.data);
             } else {
-                console.log("received non channel message", json);
+                console.log("non channel message received", json);
             }
         } catch (err) {
             console.error("failed to parse message", err);

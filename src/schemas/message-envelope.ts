@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { ChannelSchema } from "./channel.js";
 
 export const MessageEnvelopeSchema = z.object({
-    channel: ChannelSchema,
+    channel: z.enum(["bookmakers", "fixtures", "odds", "scores"]),
     type: z.literal("UPDATE"),
     payload: z.unknown(),
     ts: z.number(),
@@ -10,3 +9,4 @@ export const MessageEnvelopeSchema = z.object({
 });
 
 export type MessageEnvelope = z.infer<typeof MessageEnvelopeSchema>;
+export type Channel = z.infer<typeof MessageEnvelopeSchema>["channel"];
