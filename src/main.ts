@@ -1,9 +1,9 @@
 import "dotenv/config";
-import { connectFeed } from "./websocket.js";
+import { WebSocketClient } from "./websocket.js";
 import type { MessageEnvelope } from "./schemas/index.js";
 
 function main() {
-    connectFeed((message: MessageEnvelope) => {
+    new WebSocketClient((message: MessageEnvelope) => {
         switch (message.channel) {
             case "bookmakers":
                 // Handle bookmakers message
