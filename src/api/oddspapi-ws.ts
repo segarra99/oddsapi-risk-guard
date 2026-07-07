@@ -2,35 +2,37 @@ import WebSocket from "ws";
 import {
     MessageEnvelopeSchema,
     type MessageEnvelope,
-} from "./schemas/index.js";
+} from "../schemas/index.js";
 
-export class WebSocketClient {
+export class OddspapiWsClient {
     private ws: WebSocket | null = null;
-    private wsUrl: string;
+    private baseUrl: string;
     private apiKey: string;
-    private onMessage: (message: MessageEnvelope) => void;
+    private onMessage: (msg: MessageEnvelope) => void;
 
-    constructor(onMessage: (message: MessageEnvelope) => void) {
+    constructor(onMessage: (msg: MessageEnvelope) => void) {
         this.onMessage = onMessage;
 
-        const wsUrl = process.env.ODDS_WS_URL;
-        if (!wsUrl) {
-            throw new Error("ODDS_WS_URL environment variable is not set");
+        const baseUrl = process.env.ODDSPAPI_BASE_URL;
+        if (!baseUrl) {
+            throw new Error(
+                "ODDSPAPI_BASE_URL environment variable is not set",
+            );
         }
 
-        const apiKey = process.env.ODDS_API_KEY;
+        const apiKey = process.env.ODDSPAPI_API_KEY;
         if (!apiKey) {
-            throw new Error("ODDS_API_KEY environment variable is not set");
+            throw new Error("ODDSPAPI_API_KEY environment variable is not set");
         }
 
-        this.wsUrl = wsUrl;
+        this.baseUrl = `wss://${baseUrl}/ws`;
         this.apiKey = apiKey;
 
         this.connect();
     }
 
     private connect(): void {
-        this.ws = new WebSocket(this.wsUrl);
+        this.ws = new WebSocket(this.baseUrl);
 
         this.ws.on("open", () => {
             this.ws!.send(
@@ -40,7 +42,6 @@ export class WebSocketClient {
                     receiveType: "json",
                     channels: ["bookmakers", "fixtures", "odds"],
                     sportIds: [10, 11, 12],
-                    bookmakers: ["pinnacle", "betfair-ex", "circasports"],
                 }),
             );
             console.log("connected");

@@ -1,4 +1,4 @@
-export * from "./message-envelope.js";
-export * from "./bookmakers.js";
+export * from "./bookmaker.js";
+export * from "./fixture.js";
 export * from "./odds.js";
-export * from "./fixtures.js";
+export * from "./message-envelope.js";

@@ -1,10 +1,13 @@
 import { z } from "zod";
-import { BookmakerSchema } from "./bookmakers.js";
-import { FixtureSchema } from "./fixtures.js";
-import { OddsSchema } from "./odds.js";
+import { BookmakersPayloadSchema } from "./bookmaker.js";
+import { FixtureSchema } from "./fixture.js";
+import { OddsPayloadSchema } from "./odds.js";
 
-const envelope = <T extends z.ZodTypeAny>(
-    channel: "bookmakers" | "fixtures" | "odds",
+const envelope = <
+    const C extends "bookmakers" | "fixtures" | "odds",
+    T extends z.ZodTypeAny,
+>(
+    channel: C,
     payload: T,
 ) =>
     z.object({
@@ -16,9 +19,9 @@ const envelope = <T extends z.ZodTypeAny>(
     });
 
 export const MessageEnvelopeSchema = z.discriminatedUnion("channel", [
-    envelope("bookmakers", BookmakerSchema),
+    envelope("bookmakers", BookmakersPayloadSchema),
     envelope("fixtures", FixtureSchema),
-    envelope("odds", OddsSchema),
+    envelope("odds", OddsPayloadSchema),
 ]);
 
 export type MessageEnvelope = z.infer<typeof MessageEnvelopeSchema>;
