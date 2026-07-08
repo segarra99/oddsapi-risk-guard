@@ -7,20 +7,12 @@ async function main() {
     const state = new State();
     const restClient = new OddspapiRestClient();
 
-    /*     try {
+    try {
         console.log("bootstrapping state via HTTP...");
-        const [bookmakerData, fixtureData, oddsData] = await Promise.all([
-            restClient.getBookmakers(),
-            restClient.getFixtures(),
-            restClient.getOdds(),
-        ]);
-
-        state.applyBookmakers(bookmakerData);
-        state.applyFixture(fixtureData);
-        state.applyOdds(oddsData);
+        const snapshot = restClient.getSnapshot();
     } catch (err) {
         console.error("failed to fetch initial data", err);
-    } */
+    }
 
     new OddspapiWsClient((msg: MessageEnvelope) => {
         const { channel, payload, ts } = msg;

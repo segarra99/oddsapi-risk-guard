@@ -35,16 +35,16 @@ export class OddspapiWsClient {
         this.ws = new WebSocket(this.baseUrl);
 
         this.ws.on("open", () => {
-            this.ws!.send(
-                JSON.stringify({
-                    type: "login",
-                    apiKey: this.apiKey,
-                    receiveType: "json",
-                    channels: ["bookmakers", "fixtures", "odds"],
-                    sportIds: [10, 11, 12],
-                }),
-            );
+            const authMessage = JSON.stringify({
+                type: "login",
+                apiKey: this.apiKey,
+                receiveType: "json",
+                channels: ["bookmakers", "fixtures", "odds"],
+                sportIds: [10, 11, 12],
+            });
+
             console.log("connected");
+            this.ws!.send(authMessage);
         });
 
         this.ws.on("message", (data) => {

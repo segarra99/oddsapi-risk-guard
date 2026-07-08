@@ -14,7 +14,7 @@ export const FixtureSchema = z.object({
     tournament: z.object({
         tournamentId: z.number(),
         tournamentName: z.string(),
-        categoryName: z.string(),
+        categoryName: z.string().nullish(),
     }),
     season: z.object({
         seasonId: z.number().nullish(),
@@ -68,4 +68,7 @@ export const FixtureSchema = z.object({
     bookmakers: z.record(z.string(), z.any()).nullish(),
 });
 
+export const FixtureSnapshotSchema = z.array(FixtureSchema);
+
 export type Fixture = z.infer<typeof FixtureSchema>;
+export type FixtureSnapshot = z.infer<typeof FixtureSnapshotSchema>;
