@@ -5,6 +5,7 @@ import type {
     Odds,
     OddsPayload,
 } from "./schemas/index.js";
+import type { Epoch } from "./types/index.js";
 
 type Versioned<T> = {
     ts: number;
@@ -12,13 +13,27 @@ type Versioned<T> = {
 };
 
 export class State {
+    private epoch: Epoch = {
+        serverEpoch: "",
+        lastSeenId: {},
+    };
+
     private fixtures = new Map<string, Versioned<Fixture>>();
 
     private bookmakers = new Map<string, Map<string, Versioned<Bookmaker>>>();
 
     private odds = new Map<string, Map<string, Map<string, Versioned<Odds>>>>();
 
-    applyFixture(payload: Fixture, ts: number) {
+    getEpoch() {
+        return this.epoch;
+    }
+
+    updateEpoch(channel: string, entryId: string, serverEpoch?: string) {
+        if (serverEpoch) this.epoch.serverEpoch = serverEpoch;
+        this.epoch.lastSeenId[channel] = entryId;
+    }
+
+    applyFixture(payload: Fixture, ts: number, entryId: string) {
         const existing = this.fixtures.get(payload.fixtureId);
 
         if (existing && existing.ts >= ts) {
@@ -29,9 +44,11 @@ export class State {
             ts,
             data: payload,
         });
+
+        this.updateEpoch("fixtures", entryId);
     }
 
-    applyBookmakers(payload: BookmakersPayload, ts: number) {
+    applyBookmakers(payload: BookmakersPayload, ts: number, entryId: string) {
         if (!this.fixtures.has(payload.fixtureId)) {
             return;
         }
@@ -63,9 +80,10 @@ export class State {
                 this.odds.get(payload.fixtureId)?.delete(bookmaker.bookmaker);
             }
         }
+        this.updateEpoch("bookmakers", entryId);
     }
 
-    applyOdds(payload: OddsPayload, ts: number) {
+    applyOdds(payload: OddsPayload, ts: number, entryId: string) {
         if (!this.fixtures.has(payload.fixtureId)) {
             return;
         }
@@ -128,6 +146,8 @@ export class State {
         if (fixtureOdds.size === 0) {
             this.odds.delete(payload.fixtureId);
         }
+
+        this.updateEpoch("odds", entryId);
     }
 
     applySnapshot(snapshot: Fixture[]) {

@@ -1,1 +1,4 @@
-export type WsEvent = { type: "snapshot_required" } | { type: "login_ok" };
+export type WsEvent = {
+    type: "snapshot_required" | "login_ok" | "reconnect";
+    payload?: any;
+};

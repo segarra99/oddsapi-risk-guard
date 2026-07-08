@@ -3,7 +3,7 @@ import {
     MessageEnvelopeSchema,
     type MessageEnvelope,
 } from "../schemas/index.js";
-import type { WsEvent } from "../types/index.js";
+import type { WsEvent, Epoch } from "../types/index.js";
 
 export class OddspapiWsClient {
     private ws: WebSocket | null = null;
@@ -63,10 +63,19 @@ export class OddspapiWsClient {
                 } else {
                     switch (json.type) {
                         case "login_ok":
-                            this.onEvent({ type: "login_ok" });
+                            this.onEvent({
+                                type: "login_ok",
+                                payload: {
+                                    epoch: json.resume.serverEpoch,
+                                    entryIds: json.resume.serverEntryIds,
+                                },
+                            });
                             break;
                         case "snapshot_required":
                             this.onEvent({ type: "snapshot_required" });
+                            break;
+                        case "reconnect":
+                            this.onEvent({ type: "reconnect" });
                             break;
                         default:
                             console.error(parsed.error);
@@ -88,12 +97,24 @@ export class OddspapiWsClient {
         });
     }
 
-    private reconnect(): void {
+    reconnect(epoch?: Epoch): void {
         if (this.ws) {
             this.ws.close();
         }
+
         console.log("reconnecting...");
         this.connect();
+
+        const authMessage = JSON.stringify({
+            type: "login",
+            apiKey: this.apiKey,
+            receiveType: "json",
+            channels: ["bookmakers", "fixtures", "odds"],
+            sportIds: [10, 11, 12],
+            serverEpoch: epoch?.serverEpoch,
+            lastSeenId: epoch?.lastSeenId,
+        });
+        this.ws!.send(authMessage);
     }
 
     private close(): void {

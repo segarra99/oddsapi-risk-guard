@@ -15,24 +15,40 @@ async function main() {
         console.error("failed to fetch initial data", err);
     }
 
-    new OddspapiWsClient(
+    const wsClient = new OddspapiWsClient(
         (msg: MessageEnvelope) => {
-            const { channel, payload, ts } = msg;
+            const { channel, payload, ts, entryId } = msg;
 
             switch (channel) {
                 case "bookmakers":
-                    state.applyBookmakers(payload, ts);
+                    state.applyBookmakers(payload, ts, entryId);
                     break;
                 case "fixtures":
-                    state.applyFixture(payload, ts);
+                    state.applyFixture(payload, ts, entryId);
                     break;
                 case "odds":
-                    state.applyOdds(payload, ts);
+                    state.applyOdds(payload, ts, entryId);
                     break;
             }
         },
         async (event) => {
             switch (event.type) {
+                case "login_ok":
+                    console.log("websocket authenticated");
+                    const serverEpoch = event.payload.epoch;
+                    const serverEntryIds = event.payload.entryIds;
+
+                    for (const [channel, id] of Object.entries(
+                        serverEntryIds,
+                    )) {
+                        state.updateEpoch(channel, id as string, serverEpoch);
+                    }
+                    break;
+                case "reconnect":
+                    console.log("reconnect message received");
+                    const epoch = state.getEpoch();
+                    wsClient.reconnect(epoch);
+                    break;
                 case "snapshot_required":
                     console.log("fetching new snapshot...");
                     try {
@@ -41,10 +57,6 @@ async function main() {
                     } catch (err) {
                         console.error("failed to refresh snapshot", err);
                     }
-                    break;
-
-                case "login_ok":
-                    console.log("websocket authenticated");
                     break;
             }
         },
