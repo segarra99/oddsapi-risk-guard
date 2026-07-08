@@ -1,0 +1,61 @@
+{
+    "channel": "fixtures",
+    "type": "UPDATE",
+    "ts": 1,
+    "entryId": "1-1",
+    "payload": {
+        "fixtureId": "fixture-1",
+        "status": {
+            "live": true,
+            "statusId": null,
+            "statusName": null
+        },
+        "sport": {
+            "sportId": 1,
+            "sportName": "Football"
+        },
+        "tournament": {
+            "tournamentId": 1,
+            "tournamentName": "Test League",
+            "categoryName": null
+        },
+        "season": {
+            "seasonId": null,
+            "seasonName": null,
+            "seasonRound": null
+        },
+        "venue": null,
+        "startTime": 0,
+        "trueStartTime": null,
+        "trueEndTime": null,
+        "participants": {
+            "participant1Id": 1,
+            "participant1Name": "Team A",
+            "participant1ShortName": null,
+            "participant1Abbr": null,
+            "participant1RotNr": null,
+            "participant2Id": 2,
+            "participant2Name": "Team B",
+            "participant2ShortName": null,
+            "participant2Abbr": null,
+            "participant2RotNr": null
+        },
+        "scores": null,
+        "clock": null,
+        "expectedPeriods": null,
+        "periodLength": null,
+        "externalProviders": {
+            "betgeniusId": null,
+            "betradarId": null,
+            "flashscoreId": null,
+            "mollybetId": null,
+            "oddinId": null,
+            "opticoddsId": null,
+            "pinnacleId": null,
+            "sofascoreId": null,
+            "lsportsId": null,
+            "txoddsId": null
+        },
+        "bookmakers": {}
+    }
+}

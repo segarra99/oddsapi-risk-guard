@@ -1,0 +1,23 @@
+{
+    "channel": "bookmakers",
+    "type": "UPDATE",
+    "ts": 2,
+    "entryId": "2-1",
+    "payload": {
+        "fixtureId": "fixture-1",
+        "bookmakers": {
+            "bet365": {
+                "bookmaker": "bet365",
+                "hasOdds": true,
+                "staleOdds": false,
+                "suspended": false,
+                "participantsRotated": false,
+                "bookmakerFixtureId": null,
+                "fixturePath": null,
+                "updatedAt": null,
+                "staleOddsResponseCode": null,
+                "meta": null
+            }
+        }
+    }
+}

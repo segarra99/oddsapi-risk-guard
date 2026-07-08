@@ -1,0 +1,32 @@
+{
+    "channel": "odds",
+    "type": "UPDATE",
+    "ts": 2,
+    "entryId": "2-1",
+    "payload": {
+        "fixtureId": "fixture-1",
+        "odds": {
+            "bet365": {
+                "123": {
+                    "bookmaker": "bet365",
+                    "outcomeId": 1,
+                    "playerId": 0,
+                    "price": 2,
+                    "active": true,
+                    "marketActive": true,
+                    "mainLine": true,
+                    "marketId": 1,
+                    "bookmakerMarketId": null,
+                    "bookmakerOutcomeId": null,
+                    "bookmakerChangedAt": null,
+                    "priceFractional": null,
+                    "priceAmerican": null,
+                    "limit": null,
+                    "betslip": null,
+                    "meta": null,
+                    "changedAt": 2
+                }
+            }
+        }
+    }
+}
