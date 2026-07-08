@@ -3,15 +3,21 @@ import {
     MessageEnvelopeSchema,
     type MessageEnvelope,
 } from "../schemas/index.js";
+import type { WsEvent } from "../types/index.js";
 
 export class OddspapiWsClient {
     private ws: WebSocket | null = null;
     private baseUrl: string;
     private apiKey: string;
     private onMessage: (msg: MessageEnvelope) => void;
+    private onEvent: (event: WsEvent) => void;
 
-    constructor(onMessage: (msg: MessageEnvelope) => void) {
+    constructor(
+        onMessage: (msg: MessageEnvelope) => void,
+        onEvent: (event: WsEvent) => void,
+    ) {
         this.onMessage = onMessage;
+        this.onEvent = onEvent;
 
         const baseUrl = process.env.ODDSPAPI_BASE_URL;
         if (!baseUrl) {
@@ -55,12 +61,18 @@ export class OddspapiWsClient {
                 if (parsed.success) {
                     this.onMessage(parsed.data);
                 } else {
-                    if (json.type === "login_ok") {
-                        console.log("login successful");
-                        return;
+                    switch (json.type) {
+                        case "login_ok":
+                            this.onEvent({ type: "login_ok" });
+                            break;
+                        case "snapshot_required":
+                            this.onEvent({ type: "snapshot_required" });
+                            break;
+                        default:
+                            console.error(parsed.error);
+                            console.log("received unknown message", json);
+                            break;
                     }
-                    console.error(parsed.error);
-                    console.log("received non-channel message", json);
                 }
             } catch (err) {
                 console.error("received invalid JSON", err);

@@ -15,20 +15,40 @@ async function main() {
         console.error("failed to fetch initial data", err);
     }
 
-    new OddspapiWsClient((msg: MessageEnvelope) => {
-        const { channel, payload, ts } = msg;
-        switch (channel) {
-            case "bookmakers":
-                state.applyBookmakers(payload, ts);
-                break;
-            case "fixtures":
-                state.applyFixture(payload, ts);
-                break;
-            case "odds":
-                state.applyOdds(payload, ts);
-                break;
-        }
-    });
+    new OddspapiWsClient(
+        (msg: MessageEnvelope) => {
+            const { channel, payload, ts } = msg;
+
+            switch (channel) {
+                case "bookmakers":
+                    state.applyBookmakers(payload, ts);
+                    break;
+                case "fixtures":
+                    state.applyFixture(payload, ts);
+                    break;
+                case "odds":
+                    state.applyOdds(payload, ts);
+                    break;
+            }
+        },
+        async (event) => {
+            switch (event.type) {
+                case "snapshot_required":
+                    console.log("fetching new snapshot...");
+                    try {
+                        const snapshot = await restClient.getSnapshot();
+                        state.applySnapshot(snapshot);
+                    } catch (err) {
+                        console.error("failed to refresh snapshot", err);
+                    }
+                    break;
+
+                case "login_ok":
+                    console.log("websocket authenticated");
+                    break;
+            }
+        },
+    );
 }
 
 main();
