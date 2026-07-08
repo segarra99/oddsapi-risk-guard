@@ -21,11 +21,13 @@ export const FixtureSchema = z.object({
         seasonName: z.string().nullish(),
         seasonRound: z.number().nullish(),
     }),
-    venue: z.object({
-        venueId: z.number().nullish(),
-        venueName: z.string().nullish(),
-        venueLocation: z.string().nullish(),
-    }),
+    venue: z
+        .object({
+            venueId: z.number().nullish(),
+            venueName: z.string().nullish(),
+            venueLocation: z.string().nullish(),
+        })
+        .nullish(),
     startTime: z.number(),
     trueStartTime: z.string().nullish(),
     trueEndTime: z.string().nullish(),
@@ -68,7 +70,4 @@ export const FixtureSchema = z.object({
     bookmakers: z.record(z.string(), z.any()).nullish(),
 });
 
-export const FixtureSnapshotSchema = z.array(FixtureSchema);
-
 export type Fixture = z.infer<typeof FixtureSchema>;
-export type FixtureSnapshot = z.infer<typeof FixtureSnapshotSchema>;

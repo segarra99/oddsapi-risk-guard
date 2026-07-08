@@ -129,4 +129,133 @@ export class State {
             this.odds.delete(payload.fixtureId);
         }
     }
+
+    applySnapshot(snapshot: Fixture[]) {
+        const ts = Date.now();
+
+        const snapshotFixtureIds = new Set(
+            snapshot.map((fixture) => fixture.fixtureId),
+        );
+
+        for (const fixture of snapshot) {
+            this.fixtures.set(fixture.fixtureId, {
+                ts,
+                data: fixture,
+            });
+
+            let fixtureBookmakers = this.bookmakers.get(fixture.fixtureId);
+
+            if (!fixtureBookmakers) {
+                fixtureBookmakers = new Map();
+                this.bookmakers.set(fixture.fixtureId, fixtureBookmakers);
+            }
+
+            if (fixture.bookmakers) {
+                const snapshotBookmakers = new Set(
+                    Object.keys(fixture.bookmakers),
+                );
+
+                for (const [bookmakerName, bookmaker] of Object.entries(
+                    fixture.bookmakers,
+                )) {
+                    fixtureBookmakers.set(bookmakerName, {
+                        ts,
+                        data: {
+                            bookmaker: bookmakerName,
+                            hasOdds: bookmaker.hasOdds ?? false,
+                            staleOdds: bookmaker.staleOdds ?? false,
+                            suspended: bookmaker.suspended ?? false,
+                            participantsRotated:
+                                bookmaker.participantsRotated ?? false,
+                            bookmakerFixtureId: bookmaker.bookmakerFixtureId,
+                            fixturePath: bookmaker.fixturePath,
+                            updatedAt: null,
+                            staleOddsResponseCode: null,
+                            meta: null,
+                        },
+                    });
+
+                    if (
+                        bookmaker.staleOdds ||
+                        bookmaker.suspended ||
+                        !bookmaker.hasOdds
+                    ) {
+                        this.odds.get(fixture.fixtureId)?.delete(bookmakerName);
+                    }
+                }
+
+                for (const bookmakerName of fixtureBookmakers.keys()) {
+                    if (!snapshotBookmakers.has(bookmakerName)) {
+                        fixtureBookmakers.delete(bookmakerName);
+                        this.odds.get(fixture.fixtureId)?.delete(bookmakerName);
+                    }
+                }
+
+                if (fixtureBookmakers.size === 0) {
+                    this.bookmakers.delete(fixture.fixtureId);
+                }
+
+                const fixtureOdds = this.odds.get(fixture.fixtureId);
+
+                if (fixtureOdds?.size === 0) {
+                    this.odds.delete(fixture.fixtureId);
+                }
+            }
+        }
+
+        for (const fixtureId of this.fixtures.keys()) {
+            if (!snapshotFixtureIds.has(fixtureId)) {
+                this.fixtures.delete(fixtureId);
+                this.bookmakers.delete(fixtureId);
+                this.odds.delete(fixtureId);
+            }
+        }
+        console.log("snapshot applied");
+    }
+
+    getState() {
+        return {
+            fixtures: Object.fromEntries(
+                [...this.fixtures.entries()].map(([fixtureId, fixture]) => [
+                    fixtureId,
+                    fixture.data,
+                ]),
+            ),
+
+            bookmakers: Object.fromEntries(
+                [...this.bookmakers.entries()].map(
+                    ([fixtureId, bookmakers]) => [
+                        fixtureId,
+                        Object.fromEntries(
+                            [...bookmakers.entries()].map(
+                                ([bookmakerName, bookmaker]) => [
+                                    bookmakerName,
+                                    bookmaker.data,
+                                ],
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+
+            odds: Object.fromEntries(
+                [...this.odds.entries()].map(([fixtureId, bookmakers]) => [
+                    fixtureId,
+                    Object.fromEntries(
+                        [...bookmakers.entries()].map(
+                            ([bookmakerName, odds]) => [
+                                bookmakerName,
+                                Object.fromEntries(
+                                    [...odds.entries()].map(([oddsId, odd]) => [
+                                        oddsId,
+                                        odd.data,
+                                    ]),
+                                ),
+                            ],
+                        ),
+                    ),
+                ]),
+            ),
+        };
+    }
 }

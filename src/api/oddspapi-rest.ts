@@ -1,13 +1,4 @@
-import {
-    BookmakerSchema,
-    FixtureSchema,
-    OddsPayloadSchema,
-} from "../schemas/index.js";
-import {
-    RestBookmakersResponseSchema,
-    RestFixtureResponseSchema,
-    RestFixtureSchema,
-} from "../schemas/snapshot.js";
+import { FixtureSchema, type Fixture } from "../schemas/index.js";
 
 export class OddspapiRestClient {
     private readonly apiKey: string;
@@ -30,23 +21,7 @@ export class OddspapiRestClient {
         this.baseUrl = `https://${baseUrl}/en`;
     }
 
-    async getBookmakers() {
-        const res = await fetch(
-            `${this.baseUrl}/bookmakers?apiKey=${this.apiKey}`,
-        );
-
-        if (!res.ok) {
-            throw new Error(
-                `failed to fetch bookmakers: ${res.status} ${res.statusText}`,
-            );
-        }
-
-        const payload = await res.json();
-
-        return RestBookmakersResponseSchema.parse(payload);
-    }
-
-    async getFixtures() {
+    async getSnapshot(): Promise<Fixture[]> {
         const sports = [10, 11, 12];
 
         const responses = await Promise.all(
@@ -68,19 +43,7 @@ export class OddspapiRestClient {
         const payloads = await Promise.all(responses.map((res) => res.json()));
 
         return payloads.flatMap((payload) =>
-            RestFixtureSchema.array().parse(payload),
+            FixtureSchema.array().parse(payload),
         );
-    }
-
-    async getSnapshot() {
-        const [bookmakers, fixtures] = await Promise.all([
-            this.getBookmakers(),
-            this.getFixtures(),
-        ]);
-
-        return {
-            bookmakers,
-            fixtures,
-        };
     }
 }

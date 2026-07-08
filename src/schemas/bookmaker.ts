@@ -10,7 +10,7 @@ export const BookmakerSchema = z.object({
     suspended: z.boolean(),
     participantsRotated: z.boolean(),
     meta: z.any().nullish(),
-    updatedAt: z.string(),
+    updatedAt: z.string().nullish(),
 });
 
 export const BookmakersPayloadSchema = z.object({

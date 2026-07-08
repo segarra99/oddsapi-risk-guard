@@ -9,7 +9,8 @@ async function main() {
 
     try {
         console.log("bootstrapping state via HTTP...");
-        const snapshot = restClient.getSnapshot();
+        const snapshot = await restClient.getSnapshot();
+        state.applySnapshot(snapshot);
     } catch (err) {
         console.error("failed to fetch initial data", err);
     }
