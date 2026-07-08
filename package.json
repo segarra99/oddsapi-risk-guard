@@ -6,7 +6,8 @@
     "scripts": {
         "build": "tsc",
         "start": "node dist/main.js",
-        "dev": "tsx src/main.ts"
+        "dev": "tsx src/main.ts",
+        "test": "npx tsx src/tests/test.ts"
     },
     "repository": {
         "type": "git",

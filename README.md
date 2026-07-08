@@ -15,17 +15,40 @@ ODDSPAPI_API_KEY=your_api_key
 
 ### using docker
 
+run:
+
 ```bash
 docker compose up --build
 ```
 
 ### using npm
 
+run:
+
 ```bash
 npm install
 npm run build
 npm run start
 ```
+
+## running the test
+
+a simple replay test is included to demonstrate that the validation logic accepts valid odds updates and rejects an intentionally invalid one.
+
+run it with:
+
+```bash
+npm run test
+```
+
+the test replays two websocket messages:
+
+- `tests/odds.json` – a valid odds update that should be accepted.
+- `tests/bad-odds.json` – an intentionally invalid odds update that should be rejected.
+
+you can edit either file to change the outcome of the test. For example, changing the `fixtureId` in `bad-odds.json` to match the fixture in `fixture.json` will cause the test to accept the update instead.
+
+this demonstration only validates one protection rule: an odds update whose `fixtureId` does not match a known fixture is rejected before it can enter the application state.
 
 ## how it works
 
